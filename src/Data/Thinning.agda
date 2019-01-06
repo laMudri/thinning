@@ -6,6 +6,7 @@ module Data.Thinning where
   open import Relation.Binary.PropositionalEquality
 
   infix 4 _≤_ _<_
+  infixr 5 _>>_
 
   -- Order-preserving embeddings: a list of keep/drop (os/o′) instructions
   -- terminated by oz
@@ -55,3 +56,30 @@ module Data.Thinning where
   oi-unique (o′ θ) (os φ) = ⊥-elim (<⇒≱ oi θ)
   oi-unique oz oz = refl
   oi-unique (os θ) (os φ) = cong os (oi-unique θ φ)
+
+  -- Composition of thinnings:
+  -- an element is kept iff it is kept by both thinnings
+  _>>_ : ∀ {m n o} → m ≤ n → n ≤ o → m ≤ o
+  θ >> oz = θ
+  os θ >> os φ = os (θ >> φ)
+  o′ θ >> os φ = o′ (θ >> φ)
+  θ >> o′ φ = o′ (θ >> φ)
+
+  -- Category laws
+  oi->> : ∀ {n o} (φ : n ≤ o) → oi >> φ ≡ φ
+  oi->> oz = refl
+  oi->> (os φ) = cong os (oi->> φ)
+  oi->> (o′ φ) = cong o′ (oi->> φ)
+
+  >>-oi : ∀ {m n} (θ : m ≤ n) → θ >> oi ≡ θ
+  >>-oi oz = refl
+  >>-oi (os θ) = cong os (>>-oi θ)
+  >>-oi (o′ θ) = cong o′ (>>-oi θ)
+
+  >>->> : ∀ {m n o p} (θ : m ≤ n) (φ : n ≤ o) (χ : o ≤ p) →
+          (θ >> φ) >> χ ≡ θ >> (φ >> χ)
+  >>->> θ φ oz = refl
+  >>->> θ φ (o′ χ) = cong o′ (>>->> θ φ χ)
+  >>->> θ (o′ φ) (os χ) = cong o′ (>>->> θ φ χ)
+  >>->> (os θ) (os φ) (os χ) = cong os (>>->> θ φ χ)
+  >>->> (o′ θ) (os φ) (os χ) = cong o′ (>>->> θ φ χ)
