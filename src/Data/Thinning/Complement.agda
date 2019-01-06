@@ -7,6 +7,8 @@ module Data.Thinning.Complement where
 
   open import Data.Thinning
 
+  infixl 8 _ᶜ
+
   -- n - m, as justified by the fact that m is smaller
   -- This is the number of elements that the thinning dropped.
   diff : ∀ {m n} → m ≤ n → ℕ
@@ -31,3 +33,11 @@ module Data.Thinning.Complement where
   oi-ᶜ zero = refl , refl
   oi-ᶜ (suc n) with diff (oi {n}) | oi {n} ᶜ | oi-ᶜ n
   ... | .0 | .oe | refl , refl = refl , refl
+
+  ᶜ-ᶜ : ∀ {m n} (θ : m ≤ n) →
+        ∃ λ (q : diff (θ ᶜ) ≡ m) → subst (_≤ _) q (θ ᶜ ᶜ) ≡ θ
+  ᶜ-ᶜ oz = refl , refl
+  ᶜ-ᶜ {suc m} (os θ) with diff (θ ᶜ) | θ ᶜ ᶜ | ᶜ-ᶜ θ
+  ... | .m | .θ | refl , refl = refl , refl
+  ᶜ-ᶜ {m} (o′ θ) with diff (θ ᶜ) | θ ᶜ ᶜ | ᶜ-ᶜ θ
+  ... | .m | .θ | refl , refl = refl , refl
