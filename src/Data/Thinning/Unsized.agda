@@ -6,6 +6,8 @@ module Data.Thinning.Unsized where
   open import Data.Thinning
   open import Data.Thinning.Sub
 
+  infix 4 _⊆u_
+
   ThSet : ℕ → Set
   ThSet n = ∃ λ m → m ≤ n
 
@@ -18,5 +20,5 @@ module Data.Thinning.Unsized where
   u′ : ∀ {n} → ThSet n → ThSet (suc n)
   u′ (m , θ) = (m , o′ θ)
 
-  _⊆′_ : ∀ {n} (X Y : ThSet n) → Set
-  (_ , θ) ⊆′ (_ , φ) = θ ⊆ φ
+  _⊆u_ : ∀ {n} (X Y : ThSet n) → Set
+  (_ , θ) ⊆u (_ , φ) = θ ⊆ φ
