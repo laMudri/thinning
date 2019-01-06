@@ -3,41 +3,38 @@ module Data.Thinning.Complement where
   open import Data.Empty
   open import Data.Nat using (ℕ; zero; suc; _+_)
   open import Data.Product as Σ
+  open import Function using (id)
   open import Relation.Binary.PropositionalEquality
 
   open import Data.Thinning
+  open import Data.Thinning.Unsized
 
   infixl 8 _ᶜ
+
+  -- Set complement
+  _ᶜ : ∀ {n} → ThSet n → ThSet n
+  (.zero , oz) ᶜ = uz
+  (suc m , os θ) ᶜ = u′ ((m , θ) ᶜ)
+  (m , o′ θ) ᶜ = us ((m , θ) ᶜ)
+
+  oe-ᶜ : ∀ n → (0 , oe) ᶜ ≡ (n , oi)
+  oe-ᶜ zero = refl
+  oe-ᶜ (suc n) = cong us (oe-ᶜ n)
+
+  oi-ᶜ : ∀ n → (n , oi) ᶜ ≡ (0 , oe)
+  oi-ᶜ zero = refl
+  oi-ᶜ (suc n) = cong u′ (oi-ᶜ n)
+
+  ᶜ-ᶜ : ∀ {n} (θ : ThSet n) → (θ ᶜ) ᶜ ≡ θ
+  ᶜ-ᶜ (.zero , oz) = refl
+  ᶜ-ᶜ (suc m , os θ) = cong us (ᶜ-ᶜ (m , θ))
+  ᶜ-ᶜ (m , o′ θ) = cong u′ (ᶜ-ᶜ (m , θ))
 
   -- n - m, as justified by the fact that m is smaller
   -- This is the number of elements that the thinning dropped.
   diff : ∀ {m n} → m ≤ n → ℕ
-  diff oz = 0
-  diff (os θ) = diff θ
-  diff (o′ θ) = suc (diff θ)
+  diff θ = proj₁ ((_ , θ) ᶜ)
 
   -- All that was dropped is kept, and vice-versa.
-  _ᶜ : ∀ {m n} (θ : m ≤ n) → diff θ ≤ n
-  oz ᶜ = oz
-  os θ ᶜ = o′ (θ ᶜ)
-  o′ θ ᶜ = os (θ ᶜ)
-
-  -- Lemmas
-
-  oe-ᶜ : ∀ n → ∃ λ (q : diff (oe {n}) ≡ n) → subst (_≤ n) q (oe ᶜ) ≡ oi
-  oe-ᶜ zero = refl , refl
-  oe-ᶜ (suc n) with diff (oe {n}) | oe {n} ᶜ | oe-ᶜ n
-  ... | .n | .oi | refl , refl = refl , refl
-
-  oi-ᶜ : ∀ n → ∃ λ (q : diff (oi {n}) ≡ 0) → subst (_≤ n) q (oi ᶜ) ≡ oe
-  oi-ᶜ zero = refl , refl
-  oi-ᶜ (suc n) with diff (oi {n}) | oi {n} ᶜ | oi-ᶜ n
-  ... | .0 | .oe | refl , refl = refl , refl
-
-  ᶜ-ᶜ : ∀ {m n} (θ : m ≤ n) →
-        ∃ λ (q : diff (θ ᶜ) ≡ m) → subst (_≤ _) q (θ ᶜ ᶜ) ≡ θ
-  ᶜ-ᶜ oz = refl , refl
-  ᶜ-ᶜ {suc m} (os θ) with diff (θ ᶜ) | θ ᶜ ᶜ | ᶜ-ᶜ θ
-  ... | .m | .θ | refl , refl = refl , refl
-  ᶜ-ᶜ {m} (o′ θ) with diff (θ ᶜ) | θ ᶜ ᶜ | ᶜ-ᶜ θ
-  ... | .m | .θ | refl , refl = refl , refl
+  complement : ∀ {m n} (θ : m ≤ n) → diff θ ≤ n
+  complement θ = proj₂ ((_ , θ) ᶜ)
