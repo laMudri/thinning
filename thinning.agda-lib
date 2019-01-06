@@ -1,0 +1,3 @@
+name: thinning
+depend: standard-library egads
+include: src
