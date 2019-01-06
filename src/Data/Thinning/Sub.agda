@@ -2,7 +2,6 @@ module Data.Thinning.Sub where
 
   open import Data.Empty
   open import Data.Nat using (ℕ; zero; suc; _+_)
-  open import Data.Nat.Properties using (+-suc)
   open import Relation.Binary.PropositionalEquality
 
   open import Data.Thinning
@@ -76,3 +75,18 @@ module Data.Thinning.Sub where
   ⊆->>->> (o′′ sub) (o′s sub′) (oss sub″) = cong o′s (⊆->>->> sub sub′ sub″)
   ⊆->>->> (o′′ sub) (o′′ sub′) (o′s sub″) = cong o′s (⊆->>->> sub sub′ sub″)
   ⊆->>->> (o′′ sub) (o′′ sub′) (o′′ sub″) = cong o′′ (⊆->>->> sub sub′ sub″)
+
+  oee-unique : ∀ {m n} {θ : m ≤ n} (sub sub′ : oe ⊆ θ) → sub ≡ sub′
+  oee-unique ozz ozz = refl
+  oee-unique (o′s sub) (o′s sub′) = cong o′s (oee-unique sub sub′)
+  oee-unique (o′′ sub) (o′′ sub′) = cong o′′ (oee-unique sub sub′)
+
+  oii-unique : ∀ {m n} {θ : m ≤ n} (sub sub′ : θ ⊆ θ) → sub ≡ sub′
+  oii-unique ozz ozz = refl
+  oii-unique (oss sub) (oss sub′) = cong oss (oii-unique sub sub′)
+  oii-unique (o′′ sub) (o′′ sub′) = cong o′′ (oii-unique sub sub′)
+
+  oei-unique : ∀ {m n} {θ : m ≤ n} (sub sub′ : θ ⊆ oi) → sub ≡ sub′
+  oei-unique ozz ozz = refl
+  oei-unique (oss sub) (oss sub′) = cong oss (oei-unique sub sub′)
+  oei-unique (o′s sub) (o′s sub′) = cong o′s (oei-unique sub sub′)
